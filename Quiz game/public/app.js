@@ -157,6 +157,13 @@ socket.on('update_players', (players) => {
     
     const hasScreen = players.some(p => p.role === 'screen');
 
+    // ОНОВЛЕННЯ 1: Якщо є екран, гравці отримують режим джойстика
+    if (hasScreen && myRole === 'player') {
+        document.body.classList.add('controller-mode');
+    } else {
+        document.body.classList.remove('controller-mode');
+    }
+
     const miniBoard = document.getElementById('mini-leaderboard');
     if (myRole === 'admin' || myRole === 'screen') {
         miniBoard.innerHTML = '';
@@ -184,7 +191,6 @@ socket.on('update_players', (players) => {
         if(player.role === 'screen') roleBadge = '<span class="role-badge">ЕКРАН 🖥️</span>';
 
         let adminAction = '';
-        // Маленька іконка ТВ замість великого тексту
         if(myRole === 'admin' && player.role === 'player' && !hasScreen) {
             adminAction = `<button class="neo-btn small-btn" style="padding: 0.3rem 0.6rem; font-size: 1.5rem;" title="Зробити екраном" onclick="socket.emit('assign_screen', '${player.id}')">📺</button>`;
         }
@@ -197,7 +203,6 @@ socket.on('update_players', (players) => {
 // --- ГРА & ТАЙМЕР ---
 document.getElementById('start-game-btn').addEventListener('click', () => socket.emit('start_game'));
 
-// Адмін вручну повертає всіх в лобі
 document.getElementById('host-lobby-btn').addEventListener('click', () => {
     socket.emit('return_to_lobby');
 });
@@ -297,7 +302,14 @@ socket.on('game_over', (players) => {
     document.getElementById('host-next-btn').style.display = 'none';
     
     document.getElementById('game-options').style.display = 'none';
-    document.getElementById('question-title').innerText = "🏆 ФІНАЛЬНА ТАБЛИЦЯ ЛІДЕРІВ 🏆";
+    
+    // В режимі контролера ми не ховаємо текст "ФІНАЛЬНА ТАБЛИЦЯ", щоб гравець знав, що відбувається
+    const qTitle = document.getElementById('question-title');
+    qTitle.innerText = "🏆 ФІНАЛЬНА ТАБЛИЦЯ ЛІДЕРІВ 🏆";
+    // Якщо телефон в режимі контролера, повертаємо йому блок питання тільки для фіналу
+    if (document.body.classList.contains('controller-mode')) {
+        document.querySelector('.question-container').style.display = 'block';
+    }
     
     const realPlayers = players.filter(p => p.role === 'player').sort((a, b) => b.score - a.score);
     const boardArea = document.getElementById('final-leaderboard-area');
@@ -317,7 +329,6 @@ socket.on('game_over', (players) => {
     
     boardArea.innerHTML = boardHTML;
 
-    // Адмін сам вирішує коли повернутись
     if (myRole === 'admin') {
         document.getElementById('host-lobby-btn').style.display = 'block';
     }
@@ -325,7 +336,4 @@ socket.on('game_over', (players) => {
 
 socket.on('error', (msg) => { alert(msg); window.location.href = '/'; });
 
-// ==========================================
-// --- ПАСХАЛКИ (Закоментовано) ---
-// ==========================================
 init();
