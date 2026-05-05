@@ -6,7 +6,6 @@ let playerName = localStorage.getItem('playerName');
 let myRole = 'player'; // admin, player, screen
 let timerInterval;
 
-// --- ТЕМА ---
 const themeToggleBtn = document.getElementById('theme-toggle');
 let currentTheme = localStorage.getItem('theme') || 'light'; 
 document.documentElement.setAttribute('data-theme', currentTheme);
@@ -47,7 +46,6 @@ document.getElementById('join-by-code-btn').addEventListener('click', () => {
     else { alert("Код має бути з 4 символів!"); }
 });
 
-// --- БІБЛІОТЕКА ---
 document.getElementById('open-library-btn').addEventListener('click', () => showScreen('library-screen'));
 document.getElementById('close-library-btn').addEventListener('click', () => showScreen('dashboard-screen'));
 
@@ -58,13 +56,12 @@ socket.on('load_saved_quizzes', (quizzes) => {
     quizzes.forEach(q => {
         const btn = document.createElement('button');
         btn.className = 'interactive-card color-yellow';
-        btn.innerHTML = `<div class="window-bar"><span class="bar-title">quiz_${q.id.slice(-4)}.exe</span></div><div class="card-content" style="padding: 2rem;"><span class="card-title">${q.title}</span><span class="card-desc">Питань: ${q.questions.length}</span></div>`;
+        btn.innerHTML = `<div class="window-bar"><span class="bar-title">quiz_${q.id.slice(-4)}.exe</span></div><div class="card-content" style="padding: 2rem;"><span class="card-title">${q.title}</span><span class="card-desc">Питань: ${q.questions.length} | Час: ${q.timeLimit ? q.timeLimit / 1000 : 15}с</span></div>`;
         btn.onclick = () => socket.emit('start_saved_game', q.id);
         list.appendChild(btn);
     });
 });
 
-// --- РЕДАКТОР & ШІ ---
 document.getElementById('create-game-btn').addEventListener('click', () => { showScreen('editor-screen'); document.getElementById('questions-container').innerHTML = ''; document.getElementById('quiz-title').value = ''; addQuestionBlock(); });
 document.getElementById('cancel-editor-btn').addEventListener('click', () => showScreen('dashboard-screen'));
 
@@ -75,10 +72,14 @@ document.getElementById('open-ai-btn').addEventListener('click', () => {
 });
 document.getElementById('cancel-ai-btn').addEventListener('click', () => showScreen('editor-screen'));
 document.getElementById('start-ai-btn').addEventListener('click', () => {
-    const topic = document.getElementById('ai-topic').value.trim(); const difficulty = document.getElementById('ai-difficulty').value; const count = parseInt(document.getElementById('ai-count').value);
+    const topic = document.getElementById('ai-topic').value.trim(); 
+    const difficulty = document.getElementById('ai-difficulty').value; 
+    const count = parseInt(document.getElementById('ai-count').value);
+    const timeLimit = parseInt(document.getElementById('ai-time-limit').value) * 1000;
+
     if (!topic) return alert("Введи тему!");
     document.getElementById('start-ai-btn').style.display = 'none'; document.getElementById('ai-loading').style.display = 'block';
-    socket.emit('generate_ai_quiz', { topic, difficulty, count });
+    socket.emit('generate_ai_quiz', { topic, difficulty, count, timeLimit });
 });
 socket.on('ai_quiz_success', (quizId) => socket.emit('start_saved_game', quizId));
 socket.on('ai_error', (msg) => { alert(msg); document.getElementById('start-ai-btn').style.display = 'block'; document.getElementById('ai-loading').style.display = 'none'; });
@@ -95,8 +96,9 @@ document.getElementById('add-question-btn').addEventListener('click', addQuestio
 
 document.getElementById('save-start-btn').addEventListener('click', () => {
     const title = document.getElementById('quiz-title').value.trim() || 'Без назви';
+    const timeLimit = parseInt(document.getElementById('quiz-time-limit').value) * 1000;
     const questionBlocks = document.querySelectorAll('.question-block');
-    const quizData = { title: title, questions: [] }; let isValid = true;
+    const quizData = { title: title, timeLimit: timeLimit, questions: [] }; let isValid = true;
     questionBlocks.forEach(block => {
         const qTitle = block.querySelector('.q-title').value.trim(); const options = Array.from(block.querySelectorAll('.q-option')).map(opt => opt.value.trim()); const correctRadio = block.querySelector('input[type="radio"]:checked');
         if (!qTitle || options.some(opt => opt === '')) isValid = false;
@@ -106,7 +108,6 @@ document.getElementById('save-start-btn').addEventListener('click', () => {
     socket.emit('create_room', quizData);
 });
 
-// --- ЛОБІ ТА РОЛІ ---
 socket.on('room_created', (roomCode) => { window.history.pushState({}, '', `/?room=${roomCode}`); joinRoom(roomCode); });
 function joinRoom(code) { document.getElementById('room-code-display').innerText = code; showScreen('room-screen'); socket.emit('join_room', { roomCode: code, playerName: playerName }); }
 
@@ -157,7 +158,6 @@ socket.on('update_players', (players) => {
     
     const hasScreen = players.some(p => p.role === 'screen');
 
-    // ОНОВЛЕННЯ 1: Якщо є екран, гравці отримують режим джойстика
     if (hasScreen && myRole === 'player') {
         document.body.classList.add('controller-mode');
     } else {
@@ -200,15 +200,22 @@ socket.on('update_players', (players) => {
     });
 });
 
-// --- ГРА & ТАЙМЕР ---
 document.getElementById('start-game-btn').addEventListener('click', () => socket.emit('start_game'));
 
 document.getElementById('host-lobby-btn').addEventListener('click', () => {
     socket.emit('return_to_lobby');
 });
 
+// Кнопка екстреної зупинки для адміна
+document.getElementById('host-stop-btn').addEventListener('click', () => {
+    if(confirm('Ви впевнені, що хочете достроково завершити гру? Усі поточні бали будуть збережені.')) {
+        socket.emit('stop_game_early');
+    }
+});
+
 socket.on('go_to_lobby', () => {
     document.getElementById('host-lobby-btn').style.display = 'none';
+    document.getElementById('host-stop-btn').style.display = 'none';
     showScreen('room-screen');
     if (myRole === 'admin') {
         document.getElementById('start-game-btn').style.display = 'inline-block';
@@ -224,6 +231,12 @@ socket.on('game_started', () => {
     document.getElementById('game-options').style.display = '';
     document.getElementById('final-leaderboard-area').style.display = 'none';
     document.getElementById('host-lobby-btn').style.display = 'none';
+    
+    // Показуємо кнопку зупинки для адміна
+    if (myRole === 'admin') {
+        document.getElementById('host-stop-btn').style.display = 'block';
+    }
+    
     showScreen('game-screen');
 });
 
@@ -300,13 +313,12 @@ socket.on('game_over', (players) => {
     clearInterval(timerInterval);
     document.getElementById('timer-bar').style.width = '0%';
     document.getElementById('host-next-btn').style.display = 'none';
+    document.getElementById('host-stop-btn').style.display = 'none'; // Ховаємо кнопку зупинки
     
     document.getElementById('game-options').style.display = 'none';
     
-    // В режимі контролера ми не ховаємо текст "ФІНАЛЬНА ТАБЛИЦЯ", щоб гравець знав, що відбувається
     const qTitle = document.getElementById('question-title');
     qTitle.innerText = "🏆 ФІНАЛЬНА ТАБЛИЦЯ ЛІДЕРІВ 🏆";
-    // Якщо телефон в режимі контролера, повертаємо йому блок питання тільки для фіналу
     if (document.body.classList.contains('controller-mode')) {
         document.querySelector('.question-container').style.display = 'block';
     }
@@ -336,90 +348,32 @@ socket.on('game_over', (players) => {
 
 socket.on('error', (msg) => { alert(msg); window.location.href = '/'; });
 
-// ==========================================
-// --- ПАСХАЛКИ ТА ІВЕНТИ (Факти та Опитування) ---
-// ==========================================
 const eventsContainer = document.getElementById('dynamic-events-container');
-
-// Перевіряємо, чи ми зараз в меню (щоб не спамити під час гри)
-function isDashboardActive() { 
-    return document.getElementById('dashboard-screen').classList.contains('active'); 
-}
-
-// 1. ОПИТУВАННЯ З РЕАКЦІЯМИ
+function isDashboardActive() { return document.getElementById('dashboard-screen').classList.contains('active'); }
 const absurdPolls = [
     { q: "Трава зелена?", a1: {t: "Так", r: "Нудні норміси... 😒"}, a2: {t: "Ні, матриця", r: "Нео, це ти? 🕶️"} },
     { q: "Хто ти?", a1: {t: "Людина", r: "Доведи. 🤖"}, a2: {t: "Кіт за ПК", r: "Мяу! 🐾"} },
     { q: "Що краще?", a1: {t: "Піца 🍕", r: "+100 до щастя!"}, a2: {t: "Сон 🛏️", r: "Мудрий вибір."} },
     { q: "Ця кнопка справжня?", a1: {t: "Звісно", r: "Наївний..."}, a2: {t: "Ілюзія", r: "Ти пізнав дзен 🧘"} }
 ];
-
 function triggerMiniPoll() {
     if (!isDashboardActive() || document.querySelector('.mini-poll-popup')) return;
-
     const poll = absurdPolls[Math.floor(Math.random() * absurdPolls.length)];
-    const pollDiv = document.createElement('div');
-    pollDiv.className = 'mini-poll-popup';
-    
-    // Спавн зліва або справа, щоб не закривати кнопки по центру
+    const pollDiv = document.createElement('div'); pollDiv.className = 'mini-poll-popup';
     const isLeft = Math.random() > 0.5;
     pollDiv.style.top = `${Math.floor(Math.random() * 40) + 20}vh`; 
     if (isLeft) pollDiv.style.left = `${Math.floor(Math.random() * 15) + 5}vw`; 
     else pollDiv.style.right = `${Math.floor(Math.random() * 15) + 5}vw`; 
-
     pollDiv.innerHTML = `<div class="mini-poll-q">${poll.q}</div><div class="mini-poll-options"><button class="poll-btn neo-btn color-white small-btn" data-react="${poll.a1.r}">${poll.a1.t}</button><button class="poll-btn neo-btn color-white small-btn" data-react="${poll.a2.r}">${poll.a2.t}</button></div>`;
-
-    pollDiv.querySelectorAll('button').forEach(btn => {
-        btn.onclick = () => {
-            const reaction = btn.getAttribute('data-react');
-            pollDiv.innerHTML = `<div class="poll-reaction">${reaction}</div>`;
-            pollDiv.style.transform = "scale(1.05)";
-            setTimeout(() => { pollDiv.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => pollDiv.remove(), 300); }, 2000);
-        };
-    });
-
+    pollDiv.querySelectorAll('button').forEach(btn => { btn.onclick = () => { const reaction = btn.getAttribute('data-react'); pollDiv.innerHTML = `<div class="poll-reaction">${reaction}</div>`; pollDiv.style.transform = "scale(1.05)"; setTimeout(() => { pollDiv.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => pollDiv.remove(), 300); }, 2000); }; });
     document.body.appendChild(pollDiv);
-    // Якщо ігнорувати — зникає само через 12 сек
     setTimeout(() => { if(pollDiv.parentElement && !pollDiv.querySelector('.poll-reaction')) { pollDiv.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => pollDiv.remove(), 300); } }, 12000);
 }
-
-// 2. ФАКТИ ВІД МАСКОТА (Робота в кутку)
 const mascotPopup = document.getElementById('mascot-popup');
 const mascotText = document.getElementById('mascot-text');
-const randomFacts = [
-    "Пінгвіни мають коліна. Живи з цим.", 
-    "Якщо тиснути на всі кнопки дуже швидко, можна зламати гру (не треба).", 
-    "Я просто шматок коду, але я вірю в тебе!", 
-    "Не забувай кліпати очима. Оп, ти щойно моргнув.",
-    "В Інни Василівни є тиця євриків, чесно..."
-];
-
-function triggerFact() {
-    if (!isDashboardActive()) return; // Вистрибує тільки в меню
-    mascotText.innerText = randomFacts[Math.floor(Math.random() * randomFacts.length)]; 
-    mascotPopup.classList.add('show'); 
-    setTimeout(() => mascotPopup.classList.remove('show'), 6000);
-}
-
-// --- ТАЙМЕРИ ---
-// Перевіряємо кожні 10-20 сек, чи треба вивести опитування
-function schedulePoll() { 
-    setTimeout(() => { 
-        if (Math.random() < 0.5) triggerMiniPoll(); // 50% шанс
-        schedulePoll(); 
-    }, Math.random() * 10000 + 10000); 
-}
-
-// Перевіряємо кожні 20-30 сек, чи треба показати факт
-function scheduleFact() { 
-    setTimeout(() => { 
-        if (Math.random() < 0.6) triggerFact(); // 60% шанс
-        scheduleFact(); 
-    }, Math.random() * 10000 + 20000); 
-}
-
-// Запускаємо генератори івентів
-schedulePoll();
-scheduleFact();
-
+const randomFacts = ["Пінгвіни мають коліна. Живи з цим.", "Якщо тиснути на всі кнопки дуже швидко, можна зламати гру (не треба).", "Я просто шматок коду, але я вірю в тебе!", "Не забувай кліпати очима. Оп, ти щойно моргнув."];
+function triggerFact() { if (!isDashboardActive()) return; mascotText.innerText = randomFacts[Math.floor(Math.random() * randomFacts.length)]; mascotPopup.classList.add('show'); setTimeout(() => mascotPopup.classList.remove('show'), 6000); }
+function schedulePoll() { setTimeout(() => { if (Math.random() < 0.5) triggerMiniPoll(); schedulePoll(); }, Math.random() * 10000 + 10000); }
+function scheduleFact() { setTimeout(() => { if (Math.random() < 0.6) triggerFact(); scheduleFact(); }, Math.random() * 10000 + 20000); }
+schedulePoll(); scheduleFact();
 init();
