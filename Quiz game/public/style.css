@@ -1,80 +1,259 @@
-/* --- Справжній Пропорційний Необруталізм --- */
+/* ==========================================
+   --- БАЗОВІ ЗМІННІ ТА НАЛАШТУВАННЯ ---
+   ========================================== */
 :root {
-    --bg-color: #fdfaf6; --grid-color: #e0dcd3; --border-color: #000000;
-    --text-main: #000000; --shadow-color: #000000;
-    --neo-yellow: #FFD500; --neo-pink: #FFA6C9; --neo-purple: #B28DFF;
-    --neo-green: #00E676; --neo-red: #FF4949; --neo-white: #FFFFFF; --neo-black: #000000;
-    --border-width: 6px; --shadow-depth: 12px;
+    --bg-color: #fdfaf6; 
+    --grid-color: #e0dcd3; 
+    --border-color: #000000;
+    --text-main: #000000; 
+    --shadow-color: #000000;
+    
+    --neo-yellow: #FFD500; 
+    --neo-pink: #FFA6C9; 
+    --neo-purple: #B28DFF;
+    --neo-green: #00E676; 
+    --neo-red: #FF4949; 
+    --neo-white: #FFFFFF; 
+
+    --border-width: 6px; 
+    --shadow-depth: 12px;
 }
 
 [data-theme="dark"] {
-    --bg-color: #111111; --grid-color: #333333; --border-color: #FFFFFF;
-    --text-main: #FFFFFF; --shadow-color: #FFFFFF; --neo-white: #222222;
+    --bg-color: #111111; 
+    --grid-color: #333333; 
+    --border-color: #FFFFFF;
+    --text-main: #FFFFFF; 
+    --shadow-color: #FFFFFF; 
+    --neo-white: #222222;
 }
 
-* { box-sizing: border-box; font-family: 'Rubik', sans-serif; margin: 0; padding: 0; }
-button { appearance: none; -webkit-appearance: none; background: none; border: none; padding: 0; margin: 0; font-family: inherit; cursor: pointer; text-align: inherit; color: inherit; }
-h1, h2, h3, .card-title, .neo-btn, .bar-title { font-family: 'Rubik', sans-serif; font-weight: 900; text-transform: uppercase; }
+* { 
+    box-sizing: border-box; 
+    font-family: 'Rubik', sans-serif; 
+    margin: 0; 
+    padding: 0; 
+}
 
-body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; min-height: 100vh; padding: 2rem 1rem; overflow-x: hidden; transition: background-color 0.3s; background-image: linear-gradient(var(--grid-color) 2px, transparent 2px), linear-gradient(90deg, var(--grid-color) 2px, transparent 2px); background-size: 50px 50px; animation: panGrid 20s linear infinite; }
-@keyframes panGrid { 0% { background-position: 0px 0px; } 100% { background-position: 50px 50px; } }
+button { 
+    appearance: none; 
+    -webkit-appearance: none; 
+    background: none; 
+    border: none; 
+    padding: 0; 
+    margin: 0; 
+    font-family: inherit; 
+    cursor: pointer; 
+    text-align: inherit; 
+    color: inherit; 
+}
 
-#app { width: 100%; max-width: 900px; margin: 5vh auto; position: relative; z-index: 10; }
+h1, h2, h3, .card-title, .neo-btn, .bar-title { 
+    font-family: 'Rubik', sans-serif; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+}
 
-.neo-window { border: var(--border-width) solid var(--border-color); box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color); margin-bottom: 2rem; border-radius: 12px; overflow: hidden; }
-.window-bar { background-color: var(--bg-color); border-bottom: var(--border-width) solid var(--border-color); padding: 0.6rem 1.2rem; display: flex; align-items: center; gap: 8px; justify-content: flex-start; }
-.bar-dot { width: 14px; height: 14px; border: 2px solid var(--border-color); border-radius: 50%; background-color: var(--neo-white); }
-.bar-dot:nth-child(1) { background-color: var(--neo-red); } .bar-dot:nth-child(2) { background-color: var(--neo-yellow); } .bar-dot:nth-child(3) { background-color: var(--neo-green); }
-.bar-title { font-size: 1rem; letter-spacing: 1px; color: var(--text-main); margin: 0 auto; }
-.window-content { padding: 3rem 2rem; } .center-content { text-align: center; }
+/* ==========================================
+   --- ГОЛОВНИЙ ЛЕЙАУТ ---
+   ========================================== */
+body { 
+    background-color: var(--bg-color); 
+    color: var(--text-main); 
+    display: block; /* ФІКС: Повертаємо block замість flex */
+    min-height: 100vh; 
+    padding: 2rem 1rem; 
+    overflow-x: hidden; 
+    transition: background-color 0.3s; 
+    background-image: 
+        linear-gradient(var(--grid-color) 2px, transparent 2px), 
+        linear-gradient(90deg, var(--grid-color) 2px, transparent 2px); 
+    background-size: 50px 50px; 
+    animation: panGrid 20s linear infinite; 
+}
 
-.black-text { color: #000 !important; } [data-theme="dark"] .black-text { color: #fff !important; }
-.color-white { background-color: var(--neo-white); } .color-pink { background-color: var(--neo-pink); }
-.color-yellow { background-color: var(--neo-yellow); } .color-purple { background-color: var(--neo-purple); }
-.color-green { background-color: var(--neo-green); } .color-red { background-color: var(--neo-red); }
+@keyframes panGrid { 
+    0% { background-position: 0px 0px; } 
+    100% { background-position: 50px 50px; } 
+}
+
+#app { 
+    width: 100%; 
+    max-width: 900px; 
+    margin: 5vh auto; /* ФІКС: Центрує гру по центру екрану */
+    position: relative; 
+    z-index: 10; 
+}
+
+/* ==========================================
+   --- ВІКНА ТА КОЛЬОРИ ---
+   ========================================== */
+.neo-window { 
+    border: var(--border-width) solid var(--border-color); 
+    box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color); 
+    margin-bottom: 2rem; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    background: var(--bg-color);
+}
+
+.window-bar { 
+    background-color: var(--bg-color); 
+    border-bottom: var(--border-width) solid var(--border-color); 
+    padding: 0.6rem 1.2rem; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px; 
+    justify-content: flex-start; 
+}
+
+.bar-dot { 
+    width: 14px; 
+    height: 14px; 
+    border: 2px solid var(--border-color); 
+    border-radius: 50%; 
+    background-color: var(--neo-white); 
+}
+.bar-dot:nth-child(1) { background-color: var(--neo-red); } 
+.bar-dot:nth-child(2) { background-color: var(--neo-yellow); } 
+.bar-dot:nth-child(3) { background-color: var(--neo-green); }
+
+.bar-title { 
+    font-size: 1rem; 
+    letter-spacing: 1px; 
+    color: var(--text-main); 
+    margin: 0 auto; 
+}
+
+.window-content { padding: 3rem 2rem; } 
+.center-content { text-align: center; }
+
+.black-text { color: #000 !important; } 
+[data-theme="dark"] .black-text { color: #fff !important; }
+
+.color-white { background-color: var(--neo-white); } 
+.color-pink { background-color: var(--neo-pink); }
+.color-yellow { background-color: var(--neo-yellow); } 
+.color-purple { background-color: var(--neo-purple); }
+.color-green { background-color: var(--neo-green); } 
+.color-red { background-color: var(--neo-red); }
 .color-black { background-color: var(--border-color); color: var(--bg-color); }
 
-.neo-btn { display: inline-block; padding: 1rem 2rem; font-size: 1.2rem; letter-spacing: 1px; font-weight: 900; text-transform: uppercase; color: #000; background-color: var(--neo-white); border: var(--border-width) solid var(--border-color); box-shadow: 6px 6px 0px var(--shadow-color); border-radius: 8px; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; text-align: center; }
+/* ==========================================
+   --- КНОПКИ ТА ІНПУТИ ---
+   ========================================== */
+.neo-btn { 
+    display: inline-block; 
+    padding: 1rem 2rem; 
+    font-size: 1.2rem; 
+    letter-spacing: 1px; 
+    font-weight: 900; 
+    text-transform: uppercase; 
+    color: #000; 
+    background-color: var(--neo-white); 
+    border: var(--border-width) solid var(--border-color); 
+    box-shadow: 6px 6px 0px var(--shadow-color); 
+    border-radius: 8px; 
+    cursor: pointer; 
+    transition: transform 0.1s, box-shadow 0.1s; 
+    text-align: center; 
+}
+
 [data-theme="dark"] .neo-btn { color: #fff; }
 .neo-btn:active { transform: translate(6px, 6px); box-shadow: 0px 0px 0px transparent; }
-.action-btn { background-color: var(--border-color); color: var(--bg-color); width: 100%; font-size: 1.4rem; } [data-theme="dark"] .action-btn { color: #000; }
-.small-btn { padding: 0.8rem 1.5rem; font-size: 1rem; box-shadow: 4px 4px 0px var(--shadow-color); } .small-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px transparent; }
+
+.action-btn { background-color: var(--border-color); color: var(--bg-color); width: 100%; font-size: 1.4rem; } 
+[data-theme="dark"] .action-btn { color: #000; }
+
+.small-btn { padding: 0.8rem 1.5rem; font-size: 1rem; box-shadow: 4px 4px 0px var(--shadow-color); } 
+.small-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px transparent; }
+
 .theme-btn { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 100; background-color: var(--neo-white); }
 
-.neo-input { width: 100%; padding: 1.2rem; font-size: 1.4rem; font-weight: 800; background-color: var(--neo-white); color: var(--text-main); border: var(--border-width) solid var(--border-color); outline: none; margin-bottom: 2rem; border-radius: 8px; }
+.neo-input { 
+    width: 100%; 
+    padding: 1.2rem; 
+    font-size: 1.4rem; 
+    font-weight: 800; 
+    background-color: var(--neo-white); 
+    color: var(--text-main); 
+    border: var(--border-width) solid var(--border-color); 
+    outline: none; 
+    margin-bottom: 2rem; 
+    border-radius: 8px; 
+}
 .neo-input:focus { background-color: var(--neo-yellow); color: #000; }
 
-.screen { display: none; } .screen.active { display: block; animation: popUp 0.3s ease-out forwards; }
+.screen { display: none; } 
+.screen.active { display: block; animation: popUp 0.3s ease-out forwards; }
 @keyframes popUp { 0% { opacity: 0; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
 
-/* Дашборд та Блоки */
-.header-panel { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: var(--neo-white); margin-bottom: 2rem; border-radius: 12px; border: var(--border-width) solid var(--border-color); box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color);}
-.user-info { display: flex; align-items: center; gap: 15px; } .greeting { font-size: 1.5rem; font-weight: 900; color: var(--text-main); }
+/* ==========================================
+   --- ДАШБОРД ---
+   ========================================== */
+.header-panel { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 1.5rem 2rem; 
+    background: var(--neo-white); 
+    margin-bottom: 2rem; 
+    border-radius: 12px; 
+    border: var(--border-width) solid var(--border-color); 
+    box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color);
+}
+.user-info { display: flex; align-items: center; gap: 15px; } 
+.greeting { font-size: 1.5rem; font-weight: 900; color: var(--text-main); }
 .name-display { font-size: 1.5rem; font-weight: 900; background: var(--neo-yellow); padding: 0.4rem 1rem; border: var(--border-width) solid var(--border-color); color: #000; border-radius: 8px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .join-group { display: flex; gap: 1rem; align-items: center; }
 
 .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; width: 100%; } 
-.interactive-card { display: block; width: 100%; border: var(--border-width) solid var(--border-color); box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color); border-radius: 12px; overflow: hidden; transition: transform 0.1s, box-shadow 0.1s; } .interactive-card:active { transform: translate(var(--shadow-depth), var(--shadow-depth)); box-shadow: 0px 0px 0px transparent; } .interactive-card .window-bar { width: 100%; border-bottom: var(--border-width) solid var(--border-color); background: var(--bg-color); padding: 0.5rem 1rem; display: flex; justify-content: center; } .card-content { padding: 3rem 1.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; } .card-icon { font-size: 4rem; } .card-title { font-size: 1.8rem; color: #000; margin-bottom: 0.5rem; display: block; } .card-desc { font-size: 1.1rem; font-weight: 800; color: #000; opacity: 0.8; } .disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(100%); }
+.interactive-card { display: block; width: 100%; border: var(--border-width) solid var(--border-color); box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color); border-radius: 12px; overflow: hidden; transition: transform 0.1s, box-shadow 0.1s; } 
+.interactive-card:active { transform: translate(var(--shadow-depth), var(--shadow-depth)); box-shadow: 0px 0px 0px transparent; } 
+.interactive-card .window-bar { width: 100%; border-bottom: var(--border-width) solid var(--border-color); background: var(--bg-color); padding: 0.5rem 1rem; display: flex; justify-content: center; } 
+.card-content { padding: 3rem 1.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem; } 
+.card-icon { font-size: 4rem; } 
+.card-title { font-size: 1.8rem; color: #000; margin-bottom: 0.5rem; display: block; } 
+.card-desc { font-size: 1.1rem; font-weight: 800; color: #000; opacity: 0.8; }
 
-/* Редактор */
-.title-input { border: none; border-bottom: var(--border-width) dashed var(--border-color); background: transparent; font-size: 2.5rem; border-radius: 0; padding-left: 0; } .title-input:focus { background: transparent; border-bottom-style: solid; } .question-block { border: var(--border-width) solid var(--border-color); padding: 2rem; margin-bottom: 2rem; background-color: var(--neo-white); border-radius: 12px; } .q-header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; align-items: center; } .options-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; } .option-row { display: flex; align-items: center; border: var(--border-width) solid var(--border-color); padding: 0.8rem 1rem; background: var(--bg-color); border-radius: 8px; } .option-row input[type="radio"] { margin-right: 15px; width: 30px; height: 30px; accent-color: var(--border-color); cursor: pointer; } .q-option { border: none; width: 100%; outline: none; background: transparent; font-size: 1.2rem; font-weight: 700; color: var(--text-main); } .editor-actions { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; }
+/* ==========================================
+   --- РЕДАКТОР & ЛОБІ ---
+   ========================================== */
+.title-input { border: none; border-bottom: var(--border-width) dashed var(--border-color); background: transparent; font-size: 2.5rem; border-radius: 0; padding-left: 0; } 
+.title-input:focus { background: transparent; border-bottom-style: solid; } 
+.question-block { border: var(--border-width) solid var(--border-color); padding: 2rem; margin-bottom: 2rem; background-color: var(--neo-white); border-radius: 12px; } 
+.q-header { display: flex; justify-content: space-between; margin-bottom: 1.5rem; align-items: center; } 
+.options-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; } 
+.option-row { display: flex; align-items: center; border: var(--border-width) solid var(--border-color); padding: 0.8rem 1rem; background: var(--bg-color); border-radius: 8px; } 
+.option-row input[type="radio"] { margin-right: 15px; width: 30px; height: 30px; accent-color: var(--border-color); cursor: pointer; } 
+.q-option { border: none; width: 100%; outline: none; background: transparent; font-size: 1.2rem; font-weight: 700; color: var(--text-main); } 
+.editor-actions { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 3rem; }
 
-/* Лобі */
-.mono-badge { font-family: 'Rubik', sans-serif; font-weight: 900; font-size: 1.5rem; background: var(--neo-yellow); color: #000; padding: 0.4rem 1rem; border: var(--border-width) solid var(--border-color); border-radius: 8px;} .lobby-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; } 
+.mono-badge { font-family: 'Rubik', sans-serif; font-weight: 900; font-size: 1.5rem; background: var(--neo-yellow); color: #000; padding: 0.4rem 1rem; border: var(--border-width) solid var(--border-color); border-radius: 8px;} 
+.lobby-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; } 
 #players-list { list-style: none; margin-top: 1.5rem; }
 .player-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border: var(--border-width) solid var(--border-color); margin-bottom: 1rem; font-weight: 800; font-size: 1.4rem; background: var(--bg-color); border-radius: 8px;}
 .role-badge { font-size: 0.8rem; padding: 0.2rem 0.5rem; border: 2px solid #000; border-radius: 4px; margin-left: 10px; background: var(--neo-purple); color: #fff;}
-.status-text { font-size: 1.4rem; font-weight: 800; margin-bottom: 2rem; } .pulse-anim { animation: pulse 1.5s infinite; } @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+.status-text { font-size: 1.4rem; font-weight: 800; margin-bottom: 2rem; } 
+.pulse-anim { animation: pulse 1.5s infinite; } 
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
 
-/* ТАЙМЕР */
+/* ==========================================
+   --- ГРА ТА ТАЙМЕР ---
+   ========================================== */
 .timer-container { width: 100%; height: 30px; border: var(--border-width) solid var(--border-color); border-radius: 8px; background: var(--bg-color); margin-bottom: 1.5rem; overflow: hidden; box-shadow: 4px 4px 0px var(--shadow-color); }
 .timer-fill { height: 100%; width: 100%; background: var(--neo-red); transform-origin: left; transition: width 0.1s linear; }
 
-/* Гра */
-.game-stats { font-size: 1.8rem; } .question-container { text-align: center; font-size: 2.5rem; } .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; } 
+.game-stats { font-size: 1.8rem; } 
+.question-container { text-align: center; font-size: 2.5rem; } 
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; } 
 .option-btn { padding: 5rem 2rem; font-size: 2.5rem; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-.option-btn.color-0 { background-color: var(--neo-red); color: #fff; } .option-btn.color-1 { background-color: var(--neo-purple); color: #fff; } .option-btn.color-2 { background-color: var(--neo-yellow); color: #000; } .option-btn.color-3 { background-color: var(--neo-green); color: #000; }
+.option-btn.color-0 { background-color: var(--neo-red); color: #fff; } 
+.option-btn.color-1 { background-color: var(--neo-purple); color: #fff; } 
+.option-btn.color-2 { background-color: var(--neo-yellow); color: #000; } 
+.option-btn.color-3 { background-color: var(--neo-green); color: #000; }
+
 .option-btn.selected { transform: translate(var(--shadow-depth), var(--shadow-depth)); box-shadow: 0px 0px 0px transparent; border-color: var(--text-main); }
 .option-btn.dimmed { opacity: 0.5; filter: brightness(0.7); transform: translate(0, 0); }
 .option-btn.correct-ans { animation: pulseCorrect 0.5s infinite; border-color: #fff; border-width: 10px; z-index: 10; }
@@ -82,23 +261,6 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 
 .screen-mode .option-btn { cursor: default; transform: none; box-shadow: var(--shadow-depth) var(--shadow-depth) 0px var(--shadow-color); pointer-events: none;}
 .host-next { width: 100%; margin-top: 3rem; font-size: 1.8rem; }
-
-/* Скроллбар */
-::-webkit-scrollbar { width: 16px; } ::-webkit-scrollbar-track { background: var(--bg-color); border-left: var(--border-width) solid var(--border-color); } ::-webkit-scrollbar-thumb { background-color: var(--neo-yellow); border-left: var(--border-width) solid var(--border-color); border-bottom: var(--border-width) solid var(--border-color); } [data-theme="dark"] ::-webkit-scrollbar-thumb { background-color: var(--neo-purple); } * { scrollbar-width: auto; scrollbar-color: var(--neo-yellow) var(--bg-color); }
-
-/* ==========================================
-   --- РЕЖИМ ЕКРАНУ (ТЕЛЕВІЗОР / ПРОЄКТОР) ---
-   ========================================== */
-body.tv-mode { overflow: hidden; padding: 0; }
-body.tv-mode #app { max-width: 100vw; height: 100vh; margin: 0; padding: 2rem; display: flex; flex-direction: column; }
-body.tv-mode .screen.active { display: flex; flex-direction: column; flex: 1; }
-body.tv-mode .lobby-layout { flex: 1; }
-body.tv-mode #players-list { max-height: 55vh; overflow-y: auto; }
-body.tv-mode .question-container { margin-bottom: 2rem; flex-shrink: 0; }
-body.tv-mode .window-content.center-content h2 { font-size: 3.5rem; padding: 1.5rem; }
-body.tv-mode .options-grid { flex: 1; display: grid; grid-template-rows: 1fr 1fr; }
-body.tv-mode .option-btn { height: 100%; padding: 1rem; font-size: 3rem; }
-body.tv-mode #theme-toggle { display: none !important; }
 
 /* ==========================================
    --- ЛІДЕРБОРДИ ТА ТАБЛИЦЯ ---
@@ -116,53 +278,111 @@ body.tv-mode #theme-toggle { display: none !important; }
 .leaderboard-row.bronze { background: #CD7F32; color: #000; }
 
 /* ==========================================
+   --- ПАСХАЛКИ ---
+   ========================================== */
+#peeking-guy { position: fixed; bottom: 5%; left: -150px; font-size: 6rem; z-index: 50; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; filter: drop-shadow(6px 6px 0px var(--shadow-color)); } 
+#peeking-guy.peek-active { transform: translateX(140px); } 
+
+#mascot-popup { position: fixed; bottom: 20px; right: 20px; width: 350px; z-index: 100; transform: translateY(150%); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
+#mascot-popup.show { transform: translateY(0); } 
+
+.dynamic-drifter { position: fixed; font-size: 6rem; z-index: 0; pointer-events: none; opacity: 0.7; filter: drop-shadow(8px 8px 0px var(--shadow-color)); } 
+[data-theme="dark"] .dynamic-drifter { opacity: 0.5; filter: grayscale(30%); } 
+
+@keyframes driftPath1 { 0% { transform: translate(-20vw, 20vh) rotate(-30deg); } 100% { transform: translate(120vw, 80vh) rotate(180deg); } } 
+@keyframes driftPath2 { 0% { transform: translate(120vw, 70vh) rotate(45deg); } 100% { transform: translate(-20vw, -10vh) rotate(-180deg); } } 
+@keyframes driftPath3 { 0% { transform: translate(30vw, 120vh) rotate(0deg); } 100% { transform: translate(70vw, -30vh) rotate(360deg); } } 
+
+.mini-poll-popup { position: fixed; z-index: 1000; background: var(--neo-white); border: var(--border-width) solid var(--border-color); box-shadow: 8px 8px 0px var(--shadow-color); padding: 2rem; border-radius: 12px; width: 320px; animation: slideInDrop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; } 
+@keyframes slideInDrop { 0% { transform: translateY(-100px) rotate(-5deg); opacity: 0; } 50% { transform: translateY(20px) rotate(3deg); } 100% { transform: translateY(0) rotate(0deg); opacity: 1; } } 
+.poll-reaction { font-size: 1.4rem; font-weight: 900; text-align: center; color: var(--neo-green); animation: popUp 0.3s ease-out; } 
+[data-theme="dark"] .poll-reaction { color: var(--neo-yellow); } 
+.mini-poll-q { font-size: 1.3rem; font-weight: 900; margin-bottom: 1.5rem; color: #000; } 
+.mini-poll-options { display: flex; flex-direction: column; gap: 0.8rem; } 
+
+.snarky-tooltip { position: absolute; background: var(--neo-yellow); color: #000; border: 3px solid var(--border-color); padding: 0.5rem 1rem; font-size: 1rem; font-weight: 800; pointer-events: none; box-shadow: 4px 4px 0px var(--shadow-color); z-index: 100; animation: popInBounce 0.3s ease forwards, fadeOut 0.5s ease 2.5s forwards; } 
+@keyframes popInBounce { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(random); opacity: 1; } } 
+@keyframes fadeOut { to { opacity: 0; transform: scale(0.8); } }
+
+/* Скроллбар */
+::-webkit-scrollbar { width: 16px; } 
+::-webkit-scrollbar-track { background: var(--bg-color); border-left: var(--border-width) solid var(--border-color); } 
+::-webkit-scrollbar-thumb { background-color: var(--neo-yellow); border-left: var(--border-width) solid var(--border-color); border-bottom: var(--border-width) solid var(--border-color); } 
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background-color: var(--neo-purple); } 
+* { scrollbar-width: auto; scrollbar-color: var(--neo-yellow) var(--bg-color); }
+
+/* ==========================================
+   --- РЕЖИМ ЕКРАНУ (ТЕЛЕВІЗОР / ПРОЄКТОР) ---
+   ========================================== */
+body.tv-mode { overflow: hidden; padding: 0; }
+body.tv-mode #app { max-width: 100vw; height: 100vh; margin: 0; padding: 2rem; display: flex; flex-direction: column; }
+body.tv-mode .screen.active { display: flex; flex-direction: column; flex: 1; }
+body.tv-mode .lobby-layout { flex: 1; }
+body.tv-mode #players-list { max-height: 55vh; overflow-y: auto; }
+body.tv-mode .question-container { margin-bottom: 2rem; flex-shrink: 0; }
+body.tv-mode .window-content.center-content h2 { font-size: 3.5rem; padding: 1.5rem; }
+body.tv-mode .options-grid { flex: 1; display: grid; grid-template-rows: 1fr 1fr; }
+body.tv-mode .option-btn { height: 100%; padding: 1rem; font-size: 3rem; }
+body.tv-mode #theme-toggle { display: none !important; }
+
+/* ==========================================
    --- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ (MOBILE) ---
    ========================================== */
 @media (max-width: 768px) {
-    body { padding: 1rem 0.5rem; flex-direction: column; justify-content: flex-start; }
+    body { padding: 1rem 0.5rem; display: block; } /* ФІКС для мобілок */
+    
     .theme-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 1.5rem; padding: 1rem; z-index: 100; }
+    
     #app { margin-top: 0; }
+    
     .window-content { padding: 1.5rem 1rem; }
     .window-bar { padding: 0.5rem; }
+    
     .header-panel { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem 1rem; }
     .user-info { flex-direction: column; gap: 0.5rem; justify-content: center; }
     .name-display { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-all; }
+    
     .join-group { flex-direction: column; gap: 1rem; }
     #join-code-input, #join-by-code-btn { width: 100%; flex: none; margin-bottom: 0; }
+    
     .neo-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
     .dashboard-grid { grid-template-columns: 1fr; }
     .card-content { padding: 2rem 1rem; }
     .card-icon { font-size: 3rem; }
     .card-title { font-size: 1.4rem; }
+    
     .lobby-layout { grid-template-columns: 1fr; }
     .player-item { flex-direction: column; gap: 0.8rem; text-align: center; }
     .player-item > div { flex-direction: column; justify-content: center; }
     
     .question-container { font-size: 1.2rem; }
     #question-title { font-size: 1.5rem !important; padding: 0.5rem; word-wrap: break-word; hyphens: auto; }
+    
     .options-grid { display: flex; flex-direction: column; gap: 1rem; }
     .option-btn { padding: 1.5rem 1rem !important; font-size: 1.2rem !important; min-height: 80px; }
+    
     .leaderboard-row { flex-direction: column; text-align: center; gap: 0.5rem; }
+    
     .options-editor { grid-template-columns: 1fr; }
     .q-header { flex-direction: column; gap: 1rem; }
     .title-input { font-size: 1.5rem; }
     .ai-settings-group { flex-direction: column; gap: 1rem !important; }
 
     /* ==========================================
-       --- РЕЖИМ КОНТРОЛЕРА (КАХУТ-СТАЙЛ) ---
+       --- РЕЖИМ КОНТРОЛЕРА (ДЛЯ ГРАВЦІВ) ---
        ========================================== */
     body.controller-mode .game-stats,
     body.controller-mode .timer-container,
     body.controller-mode .question-container {
-        display: none !important; /* Ховаємо все зайве */
+        display: none !important; 
     }
     
     body.controller-mode #game-screen {
-        height: 100vh;
+        height: calc(100vh - 2rem);
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding-top: 1rem;
+        padding-top: 0;
     }
     
     body.controller-mode .options-grid {
@@ -170,13 +390,13 @@ body.tv-mode #theme-toggle { display: none !important; }
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
+        height: 100%;
     }
     
-    /* Робимо 4 кнопки-джойстики гігантськими */
     body.controller-mode .option-btn {
         flex: 1;
         margin: 0.5rem 0;
-        font-size: 1.5rem !important;
-        min-height: 0; /* Щоб flex міг сам вирішувати висоту */
+        font-size: 2rem !important;
+        min-height: 0; 
     }
 }
