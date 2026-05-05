@@ -23,6 +23,7 @@
     <button id="theme-toggle" class="neo-btn theme-btn">ТЕМНА ТЕМА</button>
 
     <div id="app">
+        <!-- Екран 1: Вхід -->
         <div id="login-screen" class="screen">
             <div class="neo-window login-box color-pink">
                 <div class="window-bar"><span class="bar-dot"></span><span class="bar-dot"></span><span class="bar-dot"></span></div>
@@ -37,6 +38,7 @@
             </div>
         </div>
 
+        <!-- Екран 2: Дашборд -->
         <div id="dashboard-screen" class="screen">
             <div class="neo-window color-white header-panel">
                 <div class="user-info">
@@ -78,6 +80,7 @@
             </div>
         </div>
 
+        <!-- Екран 2.5: Бібліотека -->
         <div id="library-screen" class="screen">
             <div class="neo-window color-white header-panel">
                 <h2 class="black-text" style="font-size: 1.8rem;">ТВОЇ ІГРИ</h2>
@@ -86,6 +89,7 @@
             <div id="saved-quizzes-list" class="dashboard-grid"></div>
         </div>
 
+        <!-- Екран 3: Редактор -->
         <div id="editor-screen" class="screen">
             <div class="neo-window color-white header-panel">
                 <h2 class="black-text" style="font-size: 1.8rem;">РЕЖИМ БОГА</h2>
@@ -94,7 +98,22 @@
             <div class="neo-window color-white editor-body">
                 <div class="window-bar"><span class="bar-dot"></span><span class="bar-dot"></span><span class="bar-dot"></span></div>
                 <div class="window-content">
-                    <input type="text" id="quiz-title" placeholder="НАЗВА ВІКТОРИНИ..." autocomplete="off" class="neo-input title-input">
+                    
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                        <input type="text" id="quiz-title" placeholder="НАЗВА ВІКТОРИНИ..." autocomplete="off" class="neo-input title-input" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                             <label class="black-text" style="font-weight: 900; white-space: nowrap;">ЧАС (СЕК):</label>
+                             <select id="quiz-time-limit" class="neo-input" style="margin-bottom: 0; cursor: pointer; width: auto; padding: 0.5rem 1rem;">
+                                 <option value="10">10</option>
+                                 <option value="15" selected>15</option>
+                                 <option value="20">20</option>
+                                 <option value="30">30</option>
+                                 <option value="45">45</option>
+                                 <option value="60">60</option>
+                             </select>
+                        </div>
+                    </div>
+
                     <button id="open-ai-btn" class="neo-btn color-purple" style="width: 100%; margin-bottom: 2rem; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <span>✨</span> ЛІНЬКИ ПИСАТИ? ЗГЕНЕРУЙ ЧЕРЕЗ ШІ!
                     </button>
@@ -107,6 +126,7 @@
             </div>
         </div>
 
+        <!-- Екран 3.5: ШІ Генератор -->
         <div id="ai-gen-screen" class="screen">
             <div class="neo-window color-white header-panel">
                 <h2 class="black-text" style="font-size: 1.8rem;">ШІ МАГІЯ ✨</h2>
@@ -117,8 +137,8 @@
                 <div class="window-content" style="text-align: left;">
                     <label class="black-text" style="font-weight: 900; font-size: 1.2rem; display: block; margin-bottom: 0.5rem;">ТЕМА ВІКТОРИНИ:</label>
                     <input type="text" id="ai-topic" placeholder="Напр: Історія мемів..." class="neo-input">
-                    <div class="ai-settings-group" style="display: flex; gap: 2rem; margin-bottom: 2rem;">
-                        <div style="flex: 1;">
+                    <div class="ai-settings-group" style="display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 120px;">
                             <label class="black-text" style="font-weight: 900; font-size: 1.2rem; display: block; margin-bottom: 0.5rem;">СКЛАДНІСТЬ:</label>
                             <select id="ai-difficulty" class="neo-input" style="cursor: pointer;">
                                 <option value="Легка">Легка (Новачки)</option>
@@ -126,9 +146,20 @@
                                 <option value="Складна">Складна (Хардкор)</option>
                             </select>
                         </div>
-                        <div style="flex: 1;">
+                        <div style="flex: 1; min-width: 100px;">
                             <label class="black-text" style="font-weight: 900; font-size: 1.2rem; display: block; margin-bottom: 0.5rem;">ПИТАНЬ:</label>
                             <input type="number" id="ai-count" value="5" min="2" max="20" class="neo-input">
+                        </div>
+                        <div style="flex: 1; min-width: 100px;">
+                            <label class="black-text" style="font-weight: 900; font-size: 1.2rem; display: block; margin-bottom: 0.5rem;">ЧАС (СЕК):</label>
+                            <select id="ai-time-limit" class="neo-input" style="cursor: pointer;">
+                                <option value="10">10</option>
+                                <option value="15" selected>15</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="45">45</option>
+                                <option value="60">60</option>
+                            </select>
                         </div>
                     </div>
                     <button id="start-ai-btn" class="neo-btn color-purple" style="width: 100%; font-size: 1.5rem;">🚀 ЗГЕНЕРУВАТИ</button>
@@ -139,6 +170,7 @@
             </div>
         </div>
 
+        <!-- Екран 4: Лобі -->
         <div id="room-screen" class="screen">
             <div class="neo-window color-white header-panel">
                 <h2 class="black-text">КІМНАТА: <span id="room-code-display" class="mono-badge"></span></h2>
@@ -163,6 +195,7 @@
             </div>
         </div>
 
+        <!-- Екран 5: Гра -->
         <div id="game-screen" class="screen">
             <div class="neo-window color-white header-panel game-stats">
                 <span id="question-counter" class="mono-badge"></span>
@@ -186,6 +219,10 @@
             <div id="final-leaderboard-area" class="final-leaderboard" style="display: none;"></div>
 
             <button id="host-next-btn" class="neo-btn color-black host-next" style="display: none;">НАСТУПНЕ ПИТАННЯ ➔</button>
+            
+            <!-- НОВА КНОПКА ЕКСТРЕНОЇ ЗУПИНКИ -->
+            <button id="host-stop-btn" class="neo-btn color-red host-next" style="display: none; margin-top: 1rem;">🛑 ДОСТРОКОВО ЗУПИНИТИ ГРУ</button>
+            
             <button id="host-lobby-btn" class="neo-btn color-red host-next" style="display: none;">ПОВЕРНУТИСЯ В ЛОБІ ➔</button>
         </div>
     </div>
