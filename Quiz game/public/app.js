@@ -336,4 +336,89 @@ socket.on('game_over', (players) => {
 
 socket.on('error', (msg) => { alert(msg); window.location.href = '/'; });
 
+// ==========================================
+// --- ПАСХАЛКИ ТА ІВЕНТИ (Факти та Опитування) ---
+// ==========================================
+const eventsContainer = document.getElementById('dynamic-events-container');
+
+// Перевіряємо, чи ми зараз в меню (щоб не спамити під час гри)
+function isDashboardActive() { 
+    return document.getElementById('dashboard-screen').classList.contains('active'); 
+}
+
+// 1. ОПИТУВАННЯ З РЕАКЦІЯМИ
+const absurdPolls = [
+    { q: "Трава зелена?", a1: {t: "Так", r: "Нудні норміси... 😒"}, a2: {t: "Ні, матриця", r: "Нео, це ти? 🕶️"} },
+    { q: "Хто ти?", a1: {t: "Людина", r: "Доведи. 🤖"}, a2: {t: "Кіт за ПК", r: "Мяу! 🐾"} },
+    { q: "Що краще?", a1: {t: "Піца 🍕", r: "+100 до щастя!"}, a2: {t: "Сон 🛏️", r: "Мудрий вибір."} },
+    { q: "Ця кнопка справжня?", a1: {t: "Звісно", r: "Наївний..."}, a2: {t: "Ілюзія", r: "Ти пізнав дзен 🧘"} }
+];
+
+function triggerMiniPoll() {
+    if (!isDashboardActive() || document.querySelector('.mini-poll-popup')) return;
+
+    const poll = absurdPolls[Math.floor(Math.random() * absurdPolls.length)];
+    const pollDiv = document.createElement('div');
+    pollDiv.className = 'mini-poll-popup';
+    
+    // Спавн зліва або справа, щоб не закривати кнопки по центру
+    const isLeft = Math.random() > 0.5;
+    pollDiv.style.top = `${Math.floor(Math.random() * 40) + 20}vh`; 
+    if (isLeft) pollDiv.style.left = `${Math.floor(Math.random() * 15) + 5}vw`; 
+    else pollDiv.style.right = `${Math.floor(Math.random() * 15) + 5}vw`; 
+
+    pollDiv.innerHTML = `<div class="mini-poll-q">${poll.q}</div><div class="mini-poll-options"><button class="poll-btn neo-btn color-white small-btn" data-react="${poll.a1.r}">${poll.a1.t}</button><button class="poll-btn neo-btn color-white small-btn" data-react="${poll.a2.r}">${poll.a2.t}</button></div>`;
+
+    pollDiv.querySelectorAll('button').forEach(btn => {
+        btn.onclick = () => {
+            const reaction = btn.getAttribute('data-react');
+            pollDiv.innerHTML = `<div class="poll-reaction">${reaction}</div>`;
+            pollDiv.style.transform = "scale(1.05)";
+            setTimeout(() => { pollDiv.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => pollDiv.remove(), 300); }, 2000);
+        };
+    });
+
+    document.body.appendChild(pollDiv);
+    // Якщо ігнорувати — зникає само через 12 сек
+    setTimeout(() => { if(pollDiv.parentElement && !pollDiv.querySelector('.poll-reaction')) { pollDiv.style.animation = 'fadeOut 0.3s forwards'; setTimeout(() => pollDiv.remove(), 300); } }, 12000);
+}
+
+// 2. ФАКТИ ВІД МАСКОТА (Робота в кутку)
+const mascotPopup = document.getElementById('mascot-popup');
+const mascotText = document.getElementById('mascot-text');
+const randomFacts = [
+    "Пінгвіни мають коліна. Живи з цим.", 
+    "Якщо тиснути на всі кнопки дуже швидко, можна зламати гру (не треба).", 
+    "Я просто шматок коду, але я вірю в тебе!", 
+    "Не забувай кліпати очима. Оп, ти щойно моргнув."
+];
+
+function triggerFact() {
+    if (!isDashboardActive()) return; // Вистрибує тільки в меню
+    mascotText.innerText = randomFacts[Math.floor(Math.random() * randomFacts.length)]; 
+    mascotPopup.classList.add('show'); 
+    setTimeout(() => mascotPopup.classList.remove('show'), 6000);
+}
+
+// --- ТАЙМЕРИ ---
+// Перевіряємо кожні 10-20 сек, чи треба вивести опитування
+function schedulePoll() { 
+    setTimeout(() => { 
+        if (Math.random() < 0.5) triggerMiniPoll(); // 50% шанс
+        schedulePoll(); 
+    }, Math.random() * 10000 + 10000); 
+}
+
+// Перевіряємо кожні 20-30 сек, чи треба показати факт
+function scheduleFact() { 
+    setTimeout(() => { 
+        if (Math.random() < 0.6) triggerFact(); // 60% шанс
+        scheduleFact(); 
+    }, Math.random() * 10000 + 20000); 
+}
+
+// Запускаємо генератори івентів
+schedulePoll();
+scheduleFact();
+
 init();
