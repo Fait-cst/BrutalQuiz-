@@ -24,12 +24,10 @@ try {
 
 function saveQuizzesToDisk() { fs.writeFileSync(DB_FILE, JSON.stringify(savedQuizzes, null, 2)); }
 
-const QUESTION_DURATION = 15000;
-
 io.on('connection', (socket) => {
     socket.emit('load_saved_quizzes', savedQuizzes);
 
-    socket.on('generate_ai_quiz', async ({ topic, difficulty, count }) => {
+    socket.on('generate_ai_quiz', async ({ topic, difficulty, count, timeLimit }) => {
         try {
             const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
             const prompt = `Створи вікторину на тему "${topic}". Складність: ${difficulty}. Кількість питань: ${count}. Ти ПОВИНЕН повернути ТІЛЬКИ валідний JSON без додаткового тексту і без маркдауну. Формат строго: {"title": "Назва", "questions": [{"title": "Питання?", "options": ["Вар1", "Вар2", "Вар3", "Вар4"], "correct": 0}]}`;
@@ -38,6 +36,7 @@ io.on('connection', (socket) => {
             let text = result.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
             const quizData = JSON.parse(text);
             quizData.id = Date.now().toString();
+            quizData.timeLimit = timeLimit; // Зберігаємо індивідуальний час для цієї гри
 
             savedQuizzes.push(quizData); saveQuizzesToDisk();
             io.emit('load_saved_quizzes', savedQuizzes);
@@ -99,10 +98,12 @@ io.on('connection', (socket) => {
     const sendQuestion = (roomCode) => {
         const room = rooms[roomCode];
         const question = room.quiz.questions[room.currentQuestionIndex];
+        const duration = room.quiz.timeLimit || 15000; // Беремо час з налаштувань (або 15с за замовчуванням)
+        
         room.players.forEach(p => p.hasAnswered = false);
         room.answersCount = 0; room.status = 'active';
 
-        const qData = { title: question.title, options: question.options, index: room.currentQuestionIndex, total: room.quiz.questions.length, duration: QUESTION_DURATION };
+        const qData = { title: question.title, options: question.options, index: room.currentQuestionIndex, total: room.quiz.questions.length, duration: duration };
         io.to(roomCode).emit('new_question', qData);
         room.questionStartTime = Date.now();
         
@@ -111,7 +112,7 @@ io.on('connection', (socket) => {
             room.status = 'timeout';
             io.to(roomCode).emit('question_timeout', question.correct);
             io.to(roomCode).emit('update_players', room.players);
-        }, QUESTION_DURATION);
+        }, duration);
     };
 
     socket.on('start_game', () => {
@@ -124,6 +125,17 @@ io.on('connection', (socket) => {
         }
     });
 
+    // НОВА ПОДІЯ: Дострокова зупинка гри
+    socket.on('stop_game_early', () => {
+        const roomCode = socket.data.roomCode;
+        const room = rooms[roomCode];
+        if (room && room.hostId === socket.id) {
+            clearTimeout(room.timer);
+            room.status = 'finished';
+            io.to(roomCode).emit('game_over', room.players);
+        }
+    });
+
     socket.on('submit_answer', (answerIndex) => {
         const roomCode = socket.data.roomCode;
         const room = rooms[roomCode];
@@ -132,12 +144,13 @@ io.on('connection', (socket) => {
         const player = room.players.find(p => p.id === socket.id);
         if (!player || player.role !== 'player' || player.hasAnswered) return;
 
+        const duration = room.quiz.timeLimit || 15000;
         player.hasAnswered = true; room.answersCount++;
         const currentQ = room.quiz.questions[room.currentQuestionIndex];
 
         if (answerIndex === currentQ.correct) {
             const timeTaken = Date.now() - room.questionStartTime;
-            const timeRatio = Math.max(0, 1 - (timeTaken / QUESTION_DURATION));
+            const timeRatio = Math.max(0, 1 - (timeTaken / duration));
             player.score += Math.floor(100 + (900 * timeRatio));
         }
 
@@ -161,7 +174,6 @@ io.on('connection', (socket) => {
         }
     });
 
-    // --- НОВА ПОДІЯ: ПОВЕРНЕННЯ В ЛОБІ ПІСЛЯ ФІНАЛУ ---
     socket.on('return_to_lobby', () => {
         const roomCode = socket.data.roomCode;
         const room = rooms[roomCode];
