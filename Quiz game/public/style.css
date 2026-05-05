@@ -86,9 +86,6 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 /* Скроллбар */
 ::-webkit-scrollbar { width: 16px; } ::-webkit-scrollbar-track { background: var(--bg-color); border-left: var(--border-width) solid var(--border-color); } ::-webkit-scrollbar-thumb { background-color: var(--neo-yellow); border-left: var(--border-width) solid var(--border-color); border-bottom: var(--border-width) solid var(--border-color); } [data-theme="dark"] ::-webkit-scrollbar-thumb { background-color: var(--neo-purple); } * { scrollbar-width: auto; scrollbar-color: var(--neo-yellow) var(--bg-color); }
 
-/* Пасхалки */
-#peeking-guy { position: fixed; bottom: 5%; left: -150px; font-size: 6rem; z-index: 50; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); pointer-events: none; filter: drop-shadow(6px 6px 0px var(--shadow-color)); } #peeking-guy.peek-active { transform: translateX(140px); } #mascot-popup { position: fixed; bottom: 20px; right: 20px; width: 350px; z-index: 100; transform: translateY(150%); transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); } #mascot-popup.show { transform: translateY(0); } .dynamic-drifter { position: fixed; font-size: 6rem; z-index: 0; pointer-events: none; opacity: 0.7; filter: drop-shadow(8px 8px 0px var(--shadow-color)); } [data-theme="dark"] .dynamic-drifter { opacity: 0.5; filter: grayscale(30%); } @keyframes driftPath1 { 0% { transform: translate(-20vw, 20vh) rotate(-30deg); } 100% { transform: translate(120vw, 80vh) rotate(180deg); } } @keyframes driftPath2 { 0% { transform: translate(120vw, 70vh) rotate(45deg); } 100% { transform: translate(-20vw, -10vh) rotate(-180deg); } } @keyframes driftPath3 { 0% { transform: translate(30vw, 120vh) rotate(0deg); } 100% { transform: translate(70vw, -30vh) rotate(360deg); } } .mini-poll-popup { position: fixed; z-index: 1000; background: var(--neo-white); border: var(--border-width) solid var(--border-color); box-shadow: 8px 8px 0px var(--shadow-color); padding: 2rem; border-radius: 12px; width: 320px; animation: slideInDrop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; } @keyframes slideInDrop { 0% { transform: translateY(-100px) rotate(-5deg); opacity: 0; } 50% { transform: translateY(20px) rotate(3deg); } 100% { transform: translateY(0) rotate(0deg); opacity: 1; } } .poll-reaction { font-size: 1.4rem; font-weight: 900; text-align: center; color: var(--neo-green); animation: popUp 0.3s ease-out; } [data-theme="dark"] .poll-reaction { color: var(--neo-yellow); } .mini-poll-q { font-size: 1.3rem; font-weight: 900; margin-bottom: 1.5rem; color: #000; } .mini-poll-options { display: flex; flex-direction: column; gap: 0.8rem; } .snarky-tooltip { position: absolute; background: var(--neo-yellow); color: #000; border: 3px solid var(--border-color); padding: 0.5rem 1rem; font-size: 1rem; font-weight: 800; pointer-events: none; box-shadow: 4px 4px 0px var(--shadow-color); z-index: 100; animation: popInBounce 0.3s ease forwards, fadeOut 0.5s ease 2.5s forwards; } @keyframes popInBounce { 0% { transform: scale(0.5) rotate(-10deg); opacity: 0; } 100% { transform: scale(1) rotate(random); opacity: 1; } } @keyframes fadeOut { to { opacity: 0; transform: scale(0.8); } }
-
 /* ==========================================
    --- РЕЖИМ ЕКРАНУ (ТЕЛЕВІЗОР / ПРОЄКТОР) ---
    ========================================== */
@@ -122,53 +119,64 @@ body.tv-mode #theme-toggle { display: none !important; }
    --- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ (MOBILE) ---
    ========================================== */
 @media (max-width: 768px) {
-    /* Змінюємо flow на колонку, щоб кнопка теми не висіла зверху як fixed */
     body { padding: 1rem 0.5rem; flex-direction: column; justify-content: flex-start; }
-    
-    /* ФІКС: Кнопка теми тепер повноцінний блок у потоці сторінки */
-    .theme-btn {
-        position: relative;
-        top: 0;
-        right: 0;
-        width: 100%;
-        margin-bottom: 1.5rem;
-        padding: 1rem;
-        z-index: 100;
-    }
-    
+    .theme-btn { position: relative; top: 0; right: 0; width: 100%; margin-bottom: 1.5rem; padding: 1rem; z-index: 100; }
     #app { margin-top: 0; }
-    
     .window-content { padding: 1.5rem 1rem; }
     .window-bar { padding: 0.5rem; }
-    
     .header-panel { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem 1rem; }
     .user-info { flex-direction: column; gap: 0.5rem; justify-content: center; }
     .name-display { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-all; }
-    
     .join-group { flex-direction: column; gap: 1rem; }
     #join-code-input, #join-by-code-btn { width: 100%; flex: none; margin-bottom: 0; }
-    
     .neo-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
     .dashboard-grid { grid-template-columns: 1fr; }
     .card-content { padding: 2rem 1rem; }
     .card-icon { font-size: 3rem; }
     .card-title { font-size: 1.4rem; }
-    
     .lobby-layout { grid-template-columns: 1fr; }
     .player-item { flex-direction: column; gap: 0.8rem; text-align: center; }
     .player-item > div { flex-direction: column; justify-content: center; }
     
     .question-container { font-size: 1.2rem; }
     #question-title { font-size: 1.5rem !important; padding: 0.5rem; word-wrap: break-word; hyphens: auto; }
-    
     .options-grid { display: flex; flex-direction: column; gap: 1rem; }
-    
     .option-btn { padding: 1.5rem 1rem !important; font-size: 1.2rem !important; min-height: 80px; }
-    
     .leaderboard-row { flex-direction: column; text-align: center; gap: 0.5rem; }
-    
     .options-editor { grid-template-columns: 1fr; }
     .q-header { flex-direction: column; gap: 1rem; }
     .title-input { font-size: 1.5rem; }
     .ai-settings-group { flex-direction: column; gap: 1rem !important; }
+
+    /* ==========================================
+       --- РЕЖИМ КОНТРОЛЕРА (КАХУТ-СТАЙЛ) ---
+       ========================================== */
+    body.controller-mode .game-stats,
+    body.controller-mode .timer-container,
+    body.controller-mode .question-container {
+        display: none !important; /* Ховаємо все зайве */
+    }
+    
+    body.controller-mode #game-screen {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-top: 1rem;
+    }
+    
+    body.controller-mode .options-grid {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+    }
+    
+    /* Робимо 4 кнопки-джойстики гігантськими */
+    body.controller-mode .option-btn {
+        flex: 1;
+        margin: 0.5rem 0;
+        font-size: 1.5rem !important;
+        min-height: 0; /* Щоб flex міг сам вирішувати висоту */
+    }
 }
