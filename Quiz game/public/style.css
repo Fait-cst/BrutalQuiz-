@@ -52,7 +52,6 @@ body { background-color: var(--bg-color); color: var(--text-main); display: flex
 .user-info { display: flex; align-items: center; gap: 15px; } .greeting { font-size: 1.5rem; font-weight: 900; color: var(--text-main); }
 .name-display { font-size: 1.5rem; font-weight: 900; background: var(--neo-yellow); padding: 0.4rem 1rem; border: var(--border-width) solid var(--border-color); color: #000; border-radius: 8px; max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Додано клас для вводу коду */
 .join-group { display: flex; gap: 1rem; align-items: center; }
 
 .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; width: 100%; } 
@@ -119,66 +118,55 @@ body.tv-mode #theme-toggle { display: none !important; }
 .leaderboard-row.silver { background: #E0E0E0; color: #000; }
 .leaderboard-row.bronze { background: #CD7F32; color: #000; }
 
-
 /* ==========================================
    --- АДАПТИВНІСТЬ ДЛЯ ТЕЛЕФОНІВ (MOBILE) ---
    ========================================== */
 @media (max-width: 768px) {
-    /* Зменшуємо зовнішні відступи */
-    body { padding: 1rem 0.5rem; }
+    /* Змінюємо flow на колонку, щоб кнопка теми не висіла зверху як fixed */
+    body { padding: 1rem 0.5rem; flex-direction: column; justify-content: flex-start; }
     
-    /* Зменшуємо відступи всередині вікон */
+    /* ФІКС: Кнопка теми тепер повноцінний блок у потоці сторінки */
+    .theme-btn {
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 100%;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        z-index: 100;
+    }
+    
+    #app { margin-top: 0; }
+    
     .window-content { padding: 1.5rem 1rem; }
     .window-bar { padding: 0.5rem; }
     
-    /* Шапки екранів перетворюємо на колонки, щоб не ламались */
-    .header-panel { 
-        flex-direction: column; 
-        gap: 1rem; 
-        text-align: center; 
-        padding: 1.5rem 1rem; 
-    }
+    .header-panel { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem 1rem; }
     .user-info { flex-direction: column; gap: 0.5rem; justify-content: center; }
     .name-display { font-size: 1.2rem; max-width: 100%; white-space: normal; word-break: break-all; }
     
-    /* Ввід коду - в стовпчик */
     .join-group { flex-direction: column; gap: 1rem; }
     #join-code-input, #join-by-code-btn { width: 100%; flex: none; margin-bottom: 0; }
     
-    /* Зменшуємо кнопки і тексти Дашборду */
     .neo-btn { padding: 0.8rem 1.2rem; font-size: 1rem; }
     .dashboard-grid { grid-template-columns: 1fr; }
     .card-content { padding: 2rem 1rem; }
     .card-icon { font-size: 3rem; }
     .card-title { font-size: 1.4rem; }
     
-    /* Лобі */
     .lobby-layout { grid-template-columns: 1fr; }
     .player-item { flex-direction: column; gap: 0.8rem; text-align: center; }
     .player-item > div { flex-direction: column; justify-content: center; }
     
-    /* ГРА - Фікс гігантських шрифтів та кнопок */
     .question-container { font-size: 1.2rem; }
-    #question-title { 
-        font-size: 1.5rem !important; 
-        padding: 0.5rem; 
-        word-wrap: break-word; 
-        hyphens: auto; 
-    }
+    #question-title { font-size: 1.5rem !important; padding: 0.5rem; word-wrap: break-word; hyphens: auto; }
     
     .options-grid { display: flex; flex-direction: column; gap: 1rem; }
     
-    /* Примусово перебиваємо гігантські стилі кнопок гри */
-    .option-btn { 
-        padding: 1.5rem 1rem !important; 
-        font-size: 1.2rem !important; 
-        min-height: 80px;
-    }
+    .option-btn { padding: 1.5rem 1rem !important; font-size: 1.2rem !important; min-height: 80px; }
     
-    /* Фінальна таблиця */
     .leaderboard-row { flex-direction: column; text-align: center; gap: 0.5rem; }
     
-    /* Редактор та ШІ налаштування */
     .options-editor { grid-template-columns: 1fr; }
     .q-header { flex-direction: column; gap: 1rem; }
     .title-input { font-size: 1.5rem; }
