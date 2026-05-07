@@ -6,7 +6,9 @@ const fs = require('fs');
 const path = require('path');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-const genAI = new GoogleGenerativeAI("AIzaSyC1qNalIdf4najpYRtW3OIxocDH6qsRP1Y");
+// Тепер ключ береться з налаштувань сервера, а не з коду
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 
 const app = express();
 const server = http.createServer(app);
